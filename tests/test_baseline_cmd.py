@@ -90,16 +90,26 @@ def test_run_baseline_prints_service_count(capsys):
 # run_baseline — error paths
 # ---------------------------------------------------------------------------
 
-def test_run_baseline_returns_1_on_load_error(capsys):
-    with patch("drift_watch.commands.baseline_cmd.load_live_config", side_effect=ConfigLoadError("bad file")):
-        code = run_baseline(_args())
-    assert code == 1
-    assert "ERROR" in capsys.readouterr().out
+def test_run_baseline_returns_nonzero_on_config_load_error(capsys):
+    with patch(
+        "drift_watch.commands.baseline_cmd.load_live_config",
+        side_effect=ConfigLoadError("file not found"),
+    ):
+        code = run_baseline(_args(live="missing.yaml"))
+
+    assert code != 0
+    err = capsys.readouterr().err
+    assert "file not found" in err
 
 
-def test_run_baseline_returns_1_on_save_error(capsys):
+def test_run_baseline_returns_nonzero_on_snapshot_error(capsys):
     with patch("drift_watch.commands.baseline_cmd.load_live_config", return_value=_FAKE_SERVICES), \
-         patch("drift_watch.commands.baseline_cmd.save_snapshot", side_effect=SnapshotError("disk full")):
+         patch(
+             "drift_watch.commands.baseline_cmd.save_snapshot",
+             side_effect=SnapshotError("disk full"),
+         ):
         code = run_baseline(_args())
-    assert code == 1
-    assert "ERROR" in capsys.readouterr().out
+
+    assert code != 0
+    err = capsys.readouterr().err
+    assert "disk full" in err
