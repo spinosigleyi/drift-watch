@@ -37,6 +37,21 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:  # noqa: SLF001
     p.set_defaults(func=run_export)
 
 
+def _build_report_content(reports: list, fmt: str) -> str:
+    """Render *reports* to a string in the requested format.
+
+    Args:
+        reports: List of drift report objects returned by ``detect_drift``.
+        fmt: Either ``"json"`` or ``"text"``.
+
+    Returns:
+        The formatted report as a string.
+    """
+    if fmt == "json":
+        return format_json_report(reports)
+    return format_text_report(reports)
+
+
 def run_export(args: argparse.Namespace) -> int:
     try:
         declared = load_declared_config(args.declared)
@@ -46,11 +61,7 @@ def run_export(args: argparse.Namespace) -> int:
         return 1
 
     reports = detect_drift(declared, live)
-
-    if args.format == "json":
-        content = format_json_report(reports)
-    else:
-        content = format_text_report(reports)
+    content = _build_report_content(reports, args.format)
 
     output_path = Path(args.output)
     try:
