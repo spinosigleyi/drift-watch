@@ -60,6 +60,14 @@ def test_non_mapping_yaml_raises(tmp_path):
         load_declared_config(str(config_file))
 
 
+def test_malformed_json_raises(tmp_path):
+    """A JSON file with invalid syntax should raise ConfigLoadError."""
+    config_file = tmp_path / "bad.json"
+    config_file.write_text("{not: valid json}")
+    with pytest.raises(ConfigLoadError, match="Failed to parse"):
+        load_declared_config(str(config_file))
+
+
 # ---------------------------------------------------------------------------
 # load_live_config
 # ---------------------------------------------------------------------------
