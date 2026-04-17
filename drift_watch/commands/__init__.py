@@ -1,7 +1,5 @@
-"""Register all sub-commands with the top-level argument parser."""
+"""Register all sub-commands with an argparse subparsers action."""
 from __future__ import annotations
-
-import argparse
 
 from drift_watch.commands import (
     alert_cmd,
@@ -13,6 +11,7 @@ from drift_watch.commands import (
     history_cmd,
     ignore_cmd,
     prune_cmd,
+    search_cmd,
     snapshot_cmd,
     summary_cmd,
     tag_cmd,
@@ -29,6 +28,7 @@ _COMMANDS = [
     history_cmd,
     ignore_cmd,
     prune_cmd,
+    search_cmd,
     snapshot_cmd,
     summary_cmd,
     tag_cmd,
@@ -36,7 +36,7 @@ _COMMANDS = [
 ]
 
 
-def register_all(subparsers: argparse._SubParsersAction) -> None:
+def register_all(subparsers) -> None:
     """Call add_parser on every known command module."""
     for cmd in _COMMANDS:
         cmd.add_parser(subparsers)
