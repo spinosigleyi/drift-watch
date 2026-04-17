@@ -2,41 +2,43 @@
 from __future__ import annotations
 
 from drift_watch.commands import (
-    alert_cmd,
-    annotate_cmd,
-    baseline_cmd,
-    compare_cmd,
+    snapshot_cmd,
     diff_cmd,
     export_cmd,
     history_cmd,
+    baseline_cmd,
+    alert_cmd,
+    watch_cmd,
     ignore_cmd,
     prune_cmd,
-    search_cmd,
-    snapshot_cmd,
-    summary_cmd,
     tag_cmd,
-    watch_cmd,
+    annotate_cmd,
+    summary_cmd,
+    compare_cmd,
+    search_cmd,
+    stats_cmd,
 )
 
 _COMMANDS = [
-    alert_cmd,
-    annotate_cmd,
-    baseline_cmd,
-    compare_cmd,
+    snapshot_cmd,
     diff_cmd,
     export_cmd,
     history_cmd,
+    baseline_cmd,
+    alert_cmd,
+    watch_cmd,
     ignore_cmd,
     prune_cmd,
-    search_cmd,
-    snapshot_cmd,
-    summary_cmd,
     tag_cmd,
-    watch_cmd,
+    annotate_cmd,
+    summary_cmd,
+    compare_cmd,
+    search_cmd,
+    stats_cmd,
 ]
 
 
 def register_all(subparsers) -> None:
-    """Call add_parser on every known command module."""
+    """Call add_parser() for every known sub-command module."""
     for cmd in _COMMANDS:
         cmd.add_parser(subparsers)
