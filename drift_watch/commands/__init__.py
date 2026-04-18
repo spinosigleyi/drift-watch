@@ -1,4 +1,4 @@
-"""Register all sub-commands with an argparse subparsers action."""
+"""Register all sub-commands with an ArgumentParser subparsers action."""
 from __future__ import annotations
 
 from drift_watch.commands import (
@@ -17,6 +17,7 @@ from drift_watch.commands import (
     compare_cmd,
     search_cmd,
     stats_cmd,
+    lint_cmd,
 )
 
 _COMMANDS = [
@@ -35,6 +36,7 @@ _COMMANDS = [
     compare_cmd,
     search_cmd,
     stats_cmd,
+    lint_cmd,
 ]
 
 
