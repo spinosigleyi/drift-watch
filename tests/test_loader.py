@@ -68,11 +68,18 @@ def test_malformed_json_raises(tmp_path):
         load_declared_config(str(config_file))
 
 
+def test_unsupported_extension_raises(tmp_path):
+    """A file with an unrecognised extension should raise ConfigLoadError."""
+    config_file = tmp_path / "services.toml"
+    config_file.write_text("[api]\nreplicas = 2\n(ConfigLoadError, match="Unsupported file format"):
+        load_declared_config(str(config_file))
+
+
 # ---------------------------------------------------------------------------
 # load_live_config
 # ---------------------------------------------------------------------------
 
-def test_live_config_returns_service_data():
+def test_live():
     source = {"api": {"replicas": 3, "image": "api:1.1.0"}}
     result = load_live_config("api", source)
     assert result == {"replicas": 3, "image": "api:1.1.0"}
