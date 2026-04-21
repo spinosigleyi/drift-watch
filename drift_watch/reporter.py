@@ -77,3 +77,16 @@ def format_json_report(reports: List[ServiceDriftReport]) -> str:
         for r in reports
     ]
     return json.dumps(data, indent=2)
+
+
+def write_json_report(
+    reports: List[ServiceDriftReport],
+    out: TextIO = sys.stdout,
+) -> None:
+    """Write a JSON drift report to *out*.
+
+    Convenience wrapper around :func:`format_json_report` that handles writing
+    to a file-like object and ensures the output ends with a newline.
+    """
+    out.write(format_json_report(reports))
+    out.write("\n")
