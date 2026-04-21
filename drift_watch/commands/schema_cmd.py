@@ -81,6 +81,15 @@ def _check_type(value: Any, expected: str) -> bool:
     return isinstance(value, py_type)
 
 
+def _print_issues(issues: list[dict]) -> None:
+    """Print all issues to stdout, grouped by severity level."""
+    for issue in issues:
+        level = issue["level"].upper()
+        service = issue["service"]
+        message = issue["message"]
+        print(f"[{level}] {service}: {message}")
+
+
 def run_schema(args: Any) -> int:
     try:
         live = load_live_config(args.live)
@@ -92,23 +101,15 @@ def run_schema(args: Any) -> int:
     all_issues: list[dict] = []
     for service, fields in live.items():
         if not isinstance(fields, dict):
-            all_issues.append({"service": service, "field": "-", "level": "error",
-                                "message": "service config is not a mapping"})
+            print(f"[warning] {service}: value is not a mapping, skipping schema validation")
             continue
         all_issues.extend(_validate_service(service, fields, schema))
+
+    _print_issues(all_issues)
 
     errors = [i for i in all_issues if i["level"] == "error"]
     warnings = [i for i in all_issues if i["level"] == "warning"]
 
-    for issue in all_issues:
-        tag = "ERROR" if issue["level"] == "error" else "WARN "
-        print(f"[{tag}] {issue['service']}: {issue['message']}")
-
-    if not all_issues:
-        print("Schema validation passed – no issues found.")
-
-    if errors:
-        return 1
-    if args.strict and warnings:
+    if errors or (args.strict and warnings):
         return 1
     return 0
