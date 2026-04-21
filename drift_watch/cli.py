@@ -49,11 +49,17 @@ def run(argv: list[str] | None = None) -> int:
     except ConfigLoadError as exc:
         print(f"drift-watch: error loading declared config: {exc}", file=sys.stderr)
         return 2
+    except OSError as exc:
+        print(f"drift-watch: cannot read declared config '{args.declared}': {exc.strerror}", file=sys.stderr)
+        return 2
 
     try:
         live = load_live_config(Path(args.live))
     except ConfigLoadError as exc:
         print(f"drift-watch: error loading live config: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"drift-watch: cannot read live config '{args.live}': {exc.strerror}", file=sys.stderr)
         return 2
 
     reports = detect_drift(declared, live)
