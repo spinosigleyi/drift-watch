@@ -53,3 +53,21 @@ def detect_drift(
         report.status = DriftStatus.DRIFTED
 
     return report
+
+
+def detect_drift_batch(
+    services: dict[str, tuple[dict[str, Any], dict[str, Any]]],
+) -> dict[str, ServiceDriftReport]:
+    """
+    Run drift detection across multiple services in one call.
+
+    Args:
+        services: A mapping of service name to a (declared, actual) tuple.
+
+    Returns:
+        A dict mapping each service name to its ServiceDriftReport.
+    """
+    return {
+        service_name: detect_drift(service_name, declared, actual)
+        for service_name, (declared, actual) in services.items()
+    }
