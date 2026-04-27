@@ -90,26 +90,34 @@ def _print_issues(issues: list[dict]) -> None:
         print(f"[{level}] {service}: {message}")
 
 
+def _summarise(issues: list[dict]) -> tuple[int, int]:
+    """Return (error_count, warning_count) for the given issue list."""
+    errors = sum(1 for i in issues if i["level"] == "error")
+    warnings = sum(1 for i in issues if i["level"] == "warning")
+    return errors, warnings
+
+
 def run_schema(args: Any) -> int:
     try:
         live = load_live_config(args.live)
         schema = _load_schema(args.schema)
     except ConfigLoadError as exc:
-        print(f"[error] {exc}", file=sys.stderr)
+        print(f"[ERROR] {exc}", file=sys.stderr)
         return 1
 
     all_issues: list[dict] = []
     for service, fields in live.items():
         if not isinstance(fields, dict):
-            print(f"[warning] {service}: value is not a mapping, skipping schema validation")
             continue
         all_issues.extend(_validate_service(service, fields, schema))
 
     _print_issues(all_issues)
 
-    errors = [i for i in all_issues if i["level"] == "error"]
-    warnings = [i for i in all_issues if i["level"] == "warning"]
+    errors, warnings = _summarise(all_issues)
+    print(f"\nResult: {errors} error(s), {warnings} warning(s) across {len(live)} service(s).")
 
-    if errors or (args.strict and warnings):
+    if errors:
+        return 1
+    if args.strict and warnings:
         return 1
     return 0
